@@ -26,4 +26,4 @@ const ChildrenModelSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-export const ChildreModel = mongoose.model("children", ChildrenModelSchema);
+export const ChildrenModel = mongoose.model("children", ChildrenModelSchema);
