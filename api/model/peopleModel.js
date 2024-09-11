@@ -35,6 +35,9 @@ const PeopleModelSchema = mongoose.Schema(
     personType: {
       type: String,
     },
+    userId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

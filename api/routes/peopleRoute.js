@@ -12,6 +12,7 @@ router.post("/add", async (req, res) => {
       age: req.body.age,
       address: req.body.address,
       personType: req.body.personType,
+      userId: req.body.userId,
     });
 
     const savedPerson = await newPerson.save();
