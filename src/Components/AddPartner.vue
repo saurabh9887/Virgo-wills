@@ -18,6 +18,7 @@ const partner = reactive({ ...props.partner });
 
 // Method to emit the saved partner data to the parent component
 const savePartner = () => {
+  // console.log(partner);
   emit("save", partner);
 };
 </script>
@@ -137,11 +138,7 @@ const savePartner = () => {
           <!-- /.agreement-checkbox -->
         </div>
         <div class="col-12">
-          <button
-            @cilck="showAddPartner = !showAddPartner"
-            type="submit"
-            class="btn-eleven fw-500 tran3s d-block mt-20"
-          >
+          <button type="submit" class="btn-eleven fw-500 tran3s d-block mt-20">
             Save Person
           </button>
         </div>

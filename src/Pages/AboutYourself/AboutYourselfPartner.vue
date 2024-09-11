@@ -1,99 +1,42 @@
 <script setup>
-import { ref, reactive } from "vue";
-import { useRouter } from "vue-router";
-import AddPartner from "../../Components/AddPartner.vue";
 import axios from "axios";
+import { onMounted, reactive, ref } from "vue";
 
-const router = useRouter();
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-const showAddPartner = ref(false);
-const showChangePartner = ref(true);
+const morePartners = ref([]);
 
-// Marital Status Options
-const maritalStatusOptions = [
-  { value: "single", label: "Single" },
-  {
-    value: "living-with-partner",
-    label: "Living with a partner but not married",
-  },
-  { value: "married", label: "Married" },
-  { value: "civil-partnership", label: "Civil Partnership" },
-  { value: "engaged", label: "Engaged" },
-  { value: "widowed", label: "Widowed" },
-  { value: "widowed-remarried", label: "Widowed and remarried" },
-  { value: "separated", label: "Married but separated" },
-  {
-    value: "civil-partnership-separated",
-    label: "Civil partnership but separated",
-  },
-  { value: "divorced", label: "Divorced" },
-];
-
-const selectedStatus = ref("married");
-const selectedPartners = ref(["nakul"]);
-const showMorePartners = ref(false);
-
-const morePartners = ref([
-  { value: "nadeem", name: "Nadeem N", email: "nadeem@gmail.com" },
-  { value: "surekha", name: "SUREKHA RATHOD", email: "SUREKHA@GMAIL.COM" },
-]);
-
-const newPartner = reactive({
+const form = reactive({
+  userId: userInfo._id,
   name: "",
   email: "",
   address: "",
-  dob: {
-    day: "",
-    month: "",
-    year: "",
-  },
   age: "",
+  dob: {
+    day: null,
+    month: null,
+    year: null,
+  },
 });
 
-const toggleMorePartners = () => {
-  showMorePartners.value = !showMorePartners.value;
-  showAddPartner.value = !showAddPartner.value;
-  showChangePartner.value = !showChangePartner.value;
-};
-
-const submitForm = () => {
-  console.log("Form submitted with data:", {
-    selectedStatus: selectedStatus.value,
-    selectedPartners: selectedPartners.value,
-  });
-  router.push("/aboutYourselfChildren");
-};
-
-const goBack = () => {
-  router.push("/yourwill");
-};
-
-const handleSavePartner = async (partnerData) => {
+const handleAddPerson = async () => {
   try {
-    // alert("Person saved successfully!");
-    // alert("Partner saved successfully!");
-    // console.log(parterData);
-
-    const res = await axios.post(
-      "http://localhost:3000/api/partner/add",
-      partnerData
-    );
-    morePartners.value.push({
-      name: res.data.name,
-      value: res.data._id,
-      email: res.data.email,
-    });
-    showAddPartner.value = !showAddPartner.value;
+    const res = await axios.post("http://localhost:3000/api/people/add", form);
     console.log(res.data);
+    morePartners.value.push(res.data);
   } catch (error) {
     console.log(error);
   }
 };
 
-const savePartner = () => {
-  console.log("New partner saved:", newPartner);
-  // Add logic to handle new partner data
-};
+onMounted(async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/people");
+    morePartners.value = res.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>
 
 <template>
@@ -146,8 +89,8 @@ const savePartner = () => {
                   </li>
                   <hr />
                   <li>
-                    <a href="signup.html" class="dropdown-item"
-                      ><span>Save and logout</span></a
+                    <router-link to="/signup" class="dropdown-item"
+                      ><span>Save and logout</span></router-link
                     >
                   </li>
                 </ul>
@@ -178,20 +121,21 @@ const savePartner = () => {
                       /></router-link>
                     </div>
                   </li>
+
                   <li class="nav-item">
                     <router-link class="nav-link" to="/" role="button"
                       >Your progress</router-link
                     >
                   </li>
                   <li class="nav-item">
-                    <router-link class="nav-link" to="yourwill" role="button"
+                    <router-link class="nav-link" to="/yourwill" role="button"
                       >Your will</router-link
                     >
                   </li>
                   <li class="nav-item">
                     <router-link
                       class="nav-link"
-                      to="who-your-will.html"
+                      hrtoef="/who-your-will"
                       role="button"
                       >Who's in your will</router-link
                     >
@@ -224,89 +168,110 @@ const savePartner = () => {
           Select your current legal status, even if you know it’s going to
           change soon. You can always update this in the future.
         </p>
-        <form @submit.prevent="submitForm">
+        <form action="#" method="POST">
           <!-- Marital Status Options Section -->
           <div class="row align-items-start mb-50">
             <div class="col-lg-12">
               <div class="marital-status-options">
                 <!-- Status Options -->
-                <label
-                  class="status-option"
-                  v-for="option in maritalStatusOptions"
-                  :key="option.value"
+                <label class="status-option"
+                  ><input type="radio" name="marital-status" value="single" />
+                  Single</label
                 >
-                  <input
+                <label class="status-option"
+                  ><input
                     type="radio"
                     name="marital-status"
-                    :value="option.value"
-                    v-model="selectedStatus"
+                    value="living-with-partner"
                   />
-                  {{ option.label }}
-                </label>
+                  Living with a partner but not married</label
+                >
+                <label class="status-option"
+                  ><input
+                    type="radio"
+                    name="marital-status"
+                    value="married"
+                    checked
+                  />
+                  Married</label
+                >
+                <label class="status-option"
+                  ><input
+                    type="radio"
+                    name="marital-status"
+                    value="civil-partnership"
+                  />
+                  Civil Partnership</label
+                >
+                <label class="status-option"
+                  ><input type="radio" name="marital-status" value="engaged" />
+                  Engaged</label
+                >
+                <label class="status-option"
+                  ><input type="radio" name="marital-status" value="widowed" />
+                  Widowed</label
+                >
+                <label class="status-option"
+                  ><input
+                    type="radio"
+                    name="marital-status"
+                    value="widowed-remarried"
+                  />
+                  Widowed and remarried</label
+                >
+                <label class="status-option"
+                  ><input
+                    type="radio"
+                    name="marital-status"
+                    value="separated"
+                  />
+                  Married but separated</label
+                >
+                <label class="status-option"
+                  ><input
+                    type="radio"
+                    name="marital-status"
+                    value="civil-partnership-separated"
+                  />
+                  Civil partnership but separated</label
+                >
+                <label class="status-option"
+                  ><input type="radio" name="marital-status" value="divorced" />
+                  Divorced</label
+                >
               </div>
             </div>
           </div>
 
           <!-- Partner Info Section -->
           <div class="partner-selection-wrapper">
-            <div class="partner-selection-initial">
-              <label class="partner-option">
-                <div class="partner-details">
-                  <div class="check-name">
-                    <p><strong>Nakul Bhoir</strong></p>
-                    <p>nilesh@virgofinancial.co.uk</p>
-                  </div>
-                  <div class="checkamrk">
-                    <input
-                      type="checkbox"
-                      name="partner"
-                      v-model="selectedPartners"
-                    />
-                  </div>
+            <label
+              v-for="(x, index) in morePartners"
+              :key="index"
+              class="partner-option"
+            >
+              <div class="partner-details">
+                <div class="check-name">
+                  <p>
+                    <strong>{{ x.name }}</strong>
+                  </p>
+                  <p>{{ x.email }}</p>
                 </div>
-              </label>
-            </div>
+                <div class="checkamrk">
+                  <input type="checkbox" name="partner" value="nakul" checked />
+                </div>
+              </div>
+            </label>
 
             <!-- Hidden content to show later -->
-            <div class="partner-selection-more" v-show="showMorePartners">
-              <label
-                class="partner-option"
-                v-for="partner in morePartners"
-                :key="partner.value"
-              >
-                <div class="partner-details">
-                  <div class="check-name">
-                    <p>
-                      <strong>{{ partner.name }}</strong>
-                    </p>
-                    <p>{{ partner.email }}</p>
-                  </div>
-                  <div class="checkamrk">
-                    <input
-                      type="checkbox"
-                      name="partner"
-                      :value="partner.value"
-                      v-model="selectedPartners"
-                    />
-                  </div>
-                </div>
-              </label>
-            </div>
           </div>
-
           <!-- Add Partner and Change Partner Buttons -->
           <div class="row align-items-start justify-content-center mb-3">
             <div class="col-lg-6 text-center">
-              <button
-                v-if="showChangePartner"
-                type="button"
-                class="btn btn-secondary change-partner"
-                @click="toggleMorePartners"
-              >
+              <!-- <button type="button" class="btn btn-secondary change-partner">
                 + Change partner
-              </button>
+              </button> -->
               <button
-                v-if="showAddPartner"
                 type="button"
                 class="btn btn-secondary add-partner"
                 data-bs-toggle="modal"
@@ -334,11 +299,15 @@ const savePartner = () => {
             <button
               type="button"
               class="btn btn-primary mb-3 btn-left py"
-              @click="goBack"
+              onclick="location.href='about-yourself-basics.html'"
             >
               Back
             </button>
-            <button type="submit" class="btn btn-primary mb-3 btn-right py">
+            <button
+              type="button"
+              class="btn btn-primary mb-3 btn-right py"
+              onclick="location.href='about-yourself-children.html'"
+            >
               Save and continue
             </button>
           </div>
@@ -348,14 +317,7 @@ const savePartner = () => {
   </section>
 
   <!-- Modal -->
-
-  <div
-    v-if="showAddPartner"
-    class="modal fade"
-    id="loginModal"
-    tabindex="-1"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="container">
         <div class="user-data-form modal-content">
@@ -369,9 +331,149 @@ const savePartner = () => {
             <h4>Add Person</h4>
           </div>
 
-          <!-- Add partner form added -->
-          <AddPartner :partner="newPartner" @save="handleSavePartner" />
-
+          <div class="form-wrapper m-auto">
+            <form
+              @submit.prevent="handleAddPerson"
+              id="newPartnerForm"
+              action="#"
+            >
+              <div class="row">
+                <div class="col-12">
+                  <div class="input-group-meta position-relative mb-25">
+                    <label><b>Full Name</b></label>
+                    <input
+                      v-model="form.name"
+                      type="text"
+                      id="partnerName"
+                      placeholder="Enter Your Name"
+                    />
+                  </div>
+                </div>
+                <div class="col-12" id="emailField">
+                  <div class="input-group-meta position-relative mb-25">
+                    <label><b>Email Address</b></label>
+                    <input
+                      v-model="form.email"
+                      type="email"
+                      id="partnerEmail"
+                      placeholder="Enter Your Email"
+                    />
+                  </div>
+                </div>
+                <!-- <div class="col-12" id="addressField" style="display: none;"> -->
+                <div class="col-12" id="addressField">
+                  <div class="input-group-meta position-relative mb-25">
+                    <label><b>Postal Address</b>(Optional)</label>
+                    <textarea
+                      v-model="form.address"
+                      id="partnerAddress"
+                      placeholder="Enter Your Address"
+                      style="
+                        padding-left: 30px;
+                        padding-top: 20px;
+                        width: 100%;
+                        background: rgba(49, 121, 90, 0.09);
+                        border: 1px solid rgba(0, 0, 0, 0.06);
+                        border-radius: 8px;
+                      "
+                    ></textarea>
+                  </div>
+                </div>
+                <!-- <div class="col-12" id="dobField" style="display: none;"> -->
+                <div class="col-12" id="dobField">
+                  <div class="input-group-meta position-relative mb-25">
+                    <label><b>Birth Date </b> (Optional)</label>
+                    <div class="d-flex justify-content-between">
+                      <input
+                        v-model="form.dob.day"
+                        type="text"
+                        name="day"
+                        placeholder="Day"
+                        value="12"
+                        class="dob-input"
+                        required
+                      />
+                      <input
+                        v-model="form.dob.month"
+                        type="text"
+                        name="month"
+                        placeholder="Month"
+                        value="08"
+                        class="dob-input"
+                        required
+                      />
+                      <input
+                        v-model="form.dob.year"
+                        type="text"
+                        name="year"
+                        placeholder="Year"
+                        value="1994"
+                        class="dob-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12" id="dobField">
+                  <div class="position-relative mb-25">
+                    <label><b>Age </b> (Optional)</label>
+                    <div class="d-flex mt-10">
+                      <div class="form-check form-check-inline ps-4">
+                        <input
+                          v-model="form.age"
+                          class="form-check-input"
+                          type="radio"
+                          name="inlineRadioOptions"
+                          id="inlineRadio1"
+                          value="option1"
+                        />
+                        <label class="form-check-label" for="inlineRadio1">
+                          Over 18
+                        </label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="inlineRadioOptions"
+                          id="inlineRadio2"
+                          value="option2"
+                        />
+                        <label class="form-check-label" for="inlineRadio2"
+                          >Under 18</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                <div class="col-12">
+                  <div
+                    class="agreement-checkbox d-flex justify-content-between align-items-center"
+                  >
+                    <div>
+                      <!-- <p><a href="#" id="useAddress">Use postal address instead</a></p>
+												<p><a href="#" id="useDob">Use date of birth instead</a></p> -->
+                      <p>
+                        We’ll use this to help whoever deals with your will
+                        identify this person. We will never contact them without
+                        your permission.
+                      </p>
+                    </div>
+                  </div>
+                  <!-- /.agreement-checkbox -->
+                </div>
+                <div class="col-12">
+                  <button
+                    type="submit"
+                    class="btn-eleven fw-500 tran3s d-block mt-20"
+                  >
+                    Save Person
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
           <!-- /.form-wrapper -->
         </div>
         <!-- /.user-data-form -->
@@ -390,6 +492,9 @@ const savePartner = () => {
                 <img src="../../../images/logo/logo.png" alt="" width="200px" />
               </a>
             </div>
+            <!-- <img src="images/lazy.svg" data-src="images/shape/shape_28.svg" alt=""
+							class="lazy-img sm-mt-30 sm-mb-20"> -->
+            <!-- logo -->
           </div>
           <div class="col-lg-4 col-md-3 footer-intro"></div>
           <div class="col-lg-4 col-md-3 footer-intro privacsy-align term">
@@ -406,6 +511,8 @@ const savePartner = () => {
     </div>
   </div>
   <!-- /.footer-one -->
+
+  <!-- Modal -->
 
   <button class="scroll-top">
     <i class="bi bi-arrow-up-short"></i>
