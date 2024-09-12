@@ -1,4 +1,13 @@
-<script setup></script>
+<script setup>
+const logout = async () => {
+  try {
+    localStorage.removeItem("userInfo");
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
+</script>
 
 <template>
   <header class="theme-main-menu menu-overlay menu-style-one sticky-menu">
@@ -50,8 +59,8 @@
                   </li>
                   <hr />
                   <li>
-                    <router-link to="/signup" class="dropdown-item"
-                      ><span>Save and logout</span></router-link
+                    <span class="dropdown-item" @click="logout"
+                      >Save and logout</span
                     >
                   </li>
                 </ul>

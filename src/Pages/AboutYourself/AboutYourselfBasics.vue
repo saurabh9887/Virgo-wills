@@ -28,6 +28,15 @@ const submitForm = () => {
   router.push("/aboutYourselfPartner");
 };
 
+const logout = async () => {
+  try {
+    localStorage.removeItem("userInfo");
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const goBack = () => {
   router.push("/yourWill");
 };
@@ -83,8 +92,8 @@ const goBack = () => {
                     <a href="#" class="dropdown-item"><span>Invite</span></a>
                   </li>
                   <hr />
-                  <router-link to="/signup" class="dropdown-item"
-                    ><span>Save and logout</span></router-link
+                  <span class="dropdown-item" @click="logout"
+                    >Save and logout</span
                   >
                 </ul>
               </li>
@@ -107,7 +116,10 @@ const goBack = () => {
                   <li class="d-block d-lg-none">
                     <div class="logo">
                       <router-link to="/" class="d-block"
-                        ><img src="../../../images/logo/logo_01.png" alt="" width="100"
+                        ><img
+                          src="../../../images/logo/logo_01.png"
+                          alt=""
+                          width="100"
                       /></router-link>
                     </div>
                   </li>

@@ -16,6 +16,15 @@ const handleSubmit = () => {
   // Save and redirect logic
   router.push("/aboutYourselfBasics");
 };
+
+const logout = async () => {
+  try {
+    localStorage.removeItem("userInfo");
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
 </script>
 
 <template>
@@ -72,9 +81,9 @@ const handleSubmit = () => {
                     </router-link>
                   </li>
                   <hr />
-                  <router-link to="/signup" class="dropdown-item">
-                    <span>Save and logout</span>
-                  </router-link>
+                  <span class="dropdown-item" @click="logout"
+                    >Save and logout</span
+                  >
                 </ul>
               </li>
             </div>

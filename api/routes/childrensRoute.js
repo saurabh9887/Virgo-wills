@@ -8,6 +8,7 @@ router.post("/add", async (req, res) => {
     const newChild = new ChildrenModel({
       name: req.body.name,
       dob: req.body.dob,
+      userId: req.body.userId,
     });
 
     const savedChild = await newChild.save();
@@ -33,6 +34,15 @@ router.get("/:id", async (req, res) => {
       return res.status(404).send("person not found");
     }
     res.status(200).json(childFound);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const deletedChild = await ChildrenModel.findByIdAndDelete(req.params.id);
+    res.status(200).json(deletedChild);
   } catch (error) {
     console.log(error);
   }

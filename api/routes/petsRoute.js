@@ -7,6 +7,7 @@ router.post("/add", async (req, res) => {
   try {
     const newPet = new PetsModel({
       name: req.body.name,
+      userId: req.body.userId,
     });
 
     const savedPet = await newPet.save();
