@@ -1,50 +1,35 @@
 <script setup>
-// import { ref } from "vue";
-// import { useRouter } from "vue-router";
+import axios from "axios";
+import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 
-// // Data variables
-// const hasPets = ref("no"); // Default value for the pets question
-// const pets = ref([]); // Array to store pet information
-// const editingPet = ref(null); // Index of the pet being edited
-// const isAddingPet = ref(false); // Flag to show add pet modal
-// const newPet = ref({ name: "" });
+const router = useRouter();
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-// const router = useRouter(); // Vue router instance
+const form = reactive({
+  name: "",
+  userId: userInfo._id,
+});
 
-// // Methods
-// const goBack = () => {
-//   router.push("/aboutYourselfChildren");
-// };
+const allPets = ref([]);
 
-// const submitForm = () => {
-//   router.push("/yourwill");
-// };
+const handleAddPet = async () => {
+  try {
+    const res = await axios.post("http://localhost:3000/api/pet/add", form);
+    allPets.value.push(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-// const editPet = (index) => {
-//   editingPet.value = index;
-// };
-
-// const removePet = (index) => {
-//   pets.value.splice(index, 1);
-//   closeModal();
-// };
-
-// const openAddPetModal = () => {
-//   isAddingPet.value = true;
-// };
-
-// const closeModal = () => {
-//   isAddingPet.value = false;
-//   editingPet.value = null;
-// };
-
-// const savePet = () => {
-//   if (newPet.value.name.trim()) {
-//     pets.value.push({ ...newPet.value });
-//     newPet.value.name = "";
-//     closeModal();
-//   }
-// };
+const logout = async () => {
+  try {
+    localStorage.removeItem("userInfo");
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const handleSubmit = async () => {
   try {
@@ -53,6 +38,15 @@ const handleSubmit = async () => {
     console.log(error);
   }
 };
+
+onMounted(async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/pet");
+    allPets.value = res.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>
 
 <template>
@@ -109,8 +103,8 @@ const handleSubmit = async () => {
                     </li>
                     <hr />
                     <li>
-                      <router-link to="/signup" class="dropdown-item"
-                        ><span>Save and logout</span></router-link
+                      <span class="dropdown-item" @click="logout"
+                        >Save and logout</span
                       >
                     </li>
                   </ul>
@@ -222,7 +216,11 @@ const handleSubmit = async () => {
               </div>
               <div class="col-lg-1"></div>
               <div class="col-lg-4">
-                <section class="job-portal-intro">
+                <section
+                  v-for="(x, index) in allPets"
+                  :key="index"
+                  class="job-portal-intro"
+                >
                   <div class="container">
                     <div class="wrapper pt-10 md-pt-50 pb-10 md-pb-50">
                       <div class="row align-items-center">
@@ -230,7 +228,7 @@ const handleSubmit = async () => {
                           class="job-list-two p-3 shadow-sm style-two position-relative"
                         >
                           <div class="d-flex justify-content-between">
-                            <h5>Tommy</h5>
+                            <h5>{{ x.name }}</h5>
 
                             <button
                               type="button"
@@ -368,19 +366,27 @@ const handleSubmit = async () => {
             </div>
 
             <div class="form-wrapper m-auto">
-              <form id="newPartnerForm" action="#">
+              <form @submit="handleAddPet" id="newPartnerForm" action="#">
                 <div class="row">
                   <div class="col-12">
                     <div class="input-group-meta position-relative mb-25">
                       <label><b>Your pet’s name</b></label>
-                      <input type="text" id="partnerName" placeholder="Tommy" />
+                      <input
+                        v-model="form.name"
+                        type="text"
+                        id="partnerName"
+                        placeholder="Tommy"
+                      />
                     </div>
                   </div>
 
                   <hr />
 
                   <div class="col-12" style="display: flex">
-                    <button class="btn btn-primary fw-500 tran3s d-block mt-20">
+                    <button
+                      type="submit"
+                      class="btn btn-primary fw-500 tran3s d-block mt-20"
+                    >
                       Save Pet
                     </button>
                   </div>

@@ -1,10 +1,12 @@
 <script setup>
 import axios from "axios";
 import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
 const morePartners = ref([]);
+const addPersoPopUp = ref(false);
 
 const form = reactive({
   userId: userInfo._id,
@@ -19,11 +21,23 @@ const form = reactive({
   },
 });
 
+const router = useRouter();
+
 const handleAddPerson = async () => {
   try {
+    addPersoPopUp.value = !addPersoPopUp.value;
     const res = await axios.post("http://localhost:3000/api/people/add", form);
     console.log(res.data);
     morePartners.value.push(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const logout = async () => {
+  try {
+    localStorage.removeItem("userInfo");
+    router.push("/");
   } catch (error) {
     console.log(error);
   }
@@ -89,8 +103,8 @@ onMounted(async () => {
                   </li>
                   <hr />
                   <li>
-                    <router-link to="/signup" class="dropdown-item"
-                      ><span>Save and logout</span></router-link
+                    <span class="dropdown-item" @click="logout"
+                      >Save and logout</span
                     >
                   </li>
                 </ul>
@@ -272,6 +286,7 @@ onMounted(async () => {
                 + Change partner
               </button> -->
               <button
+                @click="addPersoPopUp = !addPersoPopUp"
                 type="button"
                 class="btn btn-secondary add-partner"
                 data-bs-toggle="modal"
@@ -299,14 +314,14 @@ onMounted(async () => {
             <button
               type="button"
               class="btn btn-primary mb-3 btn-left py"
-              onclick="location.href='about-yourself-basics.html'"
+              onclick="location.href='aboutYourselfBasics'"
             >
               Back
             </button>
             <button
               type="button"
               class="btn btn-primary mb-3 btn-right py"
-              onclick="location.href='about-yourself-children.html'"
+              onclick="location.href='/aboutYourselfChildren'"
             >
               Save and continue
             </button>

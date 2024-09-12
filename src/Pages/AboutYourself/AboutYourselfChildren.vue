@@ -1,42 +1,22 @@
 <script setup>
-// import { ref } from "vue";
+import axios from "axios";
+import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 
-// // State management
-// const hasChildren = ref("");
-// const children = ref([]);
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-// // Child state management
-// const newChild = ref({
-//   name: "",
-//   dob: "",
-// });
+const form = reactive({
+  name: "",
+  dob: {
+    day: null,
+    month: null,
+    year: null,
+  },
+  userId: userInfo._id,
+});
 
-// // Function to save form
-// const saveForm = () => {
-//   // Process form saving logic here
-//   console.log("Form saved!");
-// };
-
-// // Add a new child
-// const addChild = () => {
-//   if (newChild.value.name && newChild.value.dob) {
-//     children.value.push({ ...newChild.value });
-//     newChild.value.name = "";
-//     newChild.value.dob = "";
-//     // Hide the modal after adding
-//     const modal = document.getElementById("addChildModal");
-//     const modalInstance = bootstrap.Modal.getInstance(modal);
-//     modalInstance.hide();
-//   }
-// };
-
-// // Edit an existing child
-// const editChild = (index) => {
-//   const child = children.value[index];
-//   newChild.value.name = child.name;
-//   newChild.value.dob = child.dob;
-//   // Optionally, you could use the same form to edit or handle in a different way.
-// };
+const router = useRouter();
+const allChildrens = ref([]);
 
 const handleSubmit = async () => {
   try {
@@ -46,9 +26,31 @@ const handleSubmit = async () => {
   }
 };
 
-const addChild = async () => {
+const handleAddChild = async () => {
   try {
-    console.log("addChild");
+    const res = await axios.post(
+      "http://localhost:3000/api/children/add",
+      form
+    );
+    allChildrens.value.push(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+onMounted(async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/children");
+    allChildrens.value = res.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+const logout = async () => {
+  try {
+    localStorage.removeItem("userInfo");
+    router.push("/");
   } catch (error) {
     console.log(error);
   }
@@ -110,8 +112,8 @@ const goBack = () => {
                   </li>
                   <hr />
                   <li>
-                    <router-link to="/signup" class="dropdown-item"
-                      ><span>Save and logout</span></router-link
+                    <span class="dropdown-item" @click="logout"
+                      >Save and logout</span
                     >
                   </li>
                 </ul>
@@ -233,7 +235,11 @@ const goBack = () => {
             </div>
             <div class="col-lg-1"></div>
             <div class="col-lg-4">
-              <section class="job-portal-intro">
+              <section
+                v-for="(x, index) in allChildrens"
+                :key="index"
+                class="job-portal-intro"
+              >
                 <div class="container">
                   <div class="wrapper pt-10 md-pt-50 pb-10 md-pb-50">
                     <div class="row align-items-center">
@@ -242,34 +248,10 @@ const goBack = () => {
                       >
                         <div class="d-flex justify-content-between">
                           <div class="">
-                            <h5>Testing Demo Name</h5>
-                            <p>27/11/2010</p>
-                          </div>
-                          <button
-                            type="button"
-                            class="edit-btn"
-                            data-bs-toggle="modal"
-                            data-bs-target="#loginModal"
-                          >
-                            <i class="fas fa-pen"></i> Edit
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-              <section class="job-portal-intro">
-                <div class="container">
-                  <div class="wrapper pt-10 md-pt-50 pb-10 md-pb-50">
-                    <div class="row align-items-center">
-                      <div
-                        class="job-list-two style-two p-3 shadow-sm position-relative"
-                      >
-                        <div class="d-flex justify-content-between">
-                          <div class="">
-                            <h5>Testing Demo Name</h5>
-                            <p>27/11/2010</p>
+                            <h5>{{ x.name }}</h5>
+                            <p>
+                              {{ x.dob.day }}/{{ x.dob.month }}/{{ x.dob.year }}
+                            </p>
                           </div>
                           <button
                             type="button"
@@ -459,12 +441,17 @@ const goBack = () => {
           </div>
 
           <div class="form-wrapper m-auto">
-            <form id="newPartnerForm" action="#">
+            <form
+              @submit.prevent="handleAddChild"
+              id="newPartnerForm"
+              action="#"
+            >
               <div class="row">
                 <div class="col-12">
                   <div class="input-group-meta position-relative mb-25">
                     <label><b>Your child’s full name</b></label>
                     <input
+                      v-model="form.name"
                       type="text"
                       id="partnerName"
                       placeholder="Testing demo Name"
@@ -477,6 +464,7 @@ const goBack = () => {
                     <p>For example, 27 10 1983</p>
                     <div class="d-flex justify-content-between">
                       <input
+                        v-model="form.dob.day"
                         type="text"
                         name="day"
                         placeholder="Day"
@@ -485,6 +473,7 @@ const goBack = () => {
                         required
                       />
                       <input
+                        v-model="form.dob.month"
                         type="text"
                         name="month"
                         placeholder="Month"
@@ -493,6 +482,7 @@ const goBack = () => {
                         required
                       />
                       <input
+                        v-model="form.dob.year"
                         type="text"
                         name="year"
                         placeholder="Year"
@@ -511,7 +501,10 @@ const goBack = () => {
                 <hr />
 
                 <div class="col-12" style="display: flex">
-                  <button class="btn btn-primary fw-500 tran3s d-block mt-20">
+                  <button
+                    type="submit"
+                    class="btn btn-primary fw-500 tran3s d-block mt-20"
+                  >
                     Save Child
                   </button>
                 </div>
@@ -683,86 +676,6 @@ const goBack = () => {
 
   <!-- Add child modal -->
   <!-- Modal -->
-  <div class="modal fade" id="addChildModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="container">
-        <div class="user-data-form modal-content">
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-          <div class="text-center">
-            <h4>Add a child</h4>
-          </div>
-
-          <div class="form-wrapper m-auto">
-            <form id="newPartnerForm" action="#">
-              <div class="row">
-                <div class="col-12">
-                  <div class="input-group-meta position-relative mb-25">
-                    <label><b>Your child’s full name</b></label>
-                    <input
-                      type="text"
-                      id="partnerName"
-                      placeholder="Testing demo Name"
-                    />
-                  </div>
-                </div>
-                <div class="col-12" id="emailField">
-                  <div class="input-group-meta position-relative mb-25">
-                    <label><b>Your child’s date of birth</b></label>
-                    <p>For example, 27 10 1983</p>
-                    <div class="d-flex justify-content-between">
-                      <input
-                        type="text"
-                        name="day"
-                        placeholder="Day"
-                        value="12"
-                        class="dob-input"
-                        required
-                      />
-                      <input
-                        type="text"
-                        name="month"
-                        placeholder="Month"
-                        value="08"
-                        class="dob-input"
-                        required
-                      />
-                      <input
-                        type="text"
-                        name="year"
-                        placeholder="Year"
-                        value="1994"
-                        class="dob-input"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-                <p>
-                  If your child has a disability or will need a guardian after
-                  they turn 18, we recommend you seek specialist advice.
-                </p>
-
-                <hr />
-
-                <div class="col-12" style="display: flex">
-                  <button class="btn btn-primary fw-500 tran3s d-block mt-20">
-                    Save Child
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-          <!-- /.form-wrapper -->
-        </div>
-        <!-- /.user-data-form -->
-      </div>
-    </div>
-  </div>
 
   <!-- Confirmation Modal -->
   <div

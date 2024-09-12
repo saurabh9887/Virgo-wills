@@ -6,6 +6,9 @@ const PetsModelSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    userId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

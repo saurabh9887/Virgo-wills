@@ -22,6 +22,9 @@ const ChildrenModelSchema = mongoose.Schema(
         max: 2007,
       },
     },
+    userId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
