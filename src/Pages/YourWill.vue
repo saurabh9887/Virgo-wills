@@ -218,7 +218,7 @@
                 <p>The owner of tommy</p>
                 <div class="text-end edit-button">
                   <router-link
-                    to="/aboutYourselfNames"
+                    to="/aboutYou"
                     class="apply-btn text-center tran3s mb-30"
                   >
                     EDIT

@@ -1,20 +1,20 @@
 <script setup>
+import axios from "axios";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 
-const form = reactive({
-  legal_name: "Wowinfotech",
-  preferred_name: "Wowinfotech",
-  day: "12",
-  month: "08",
-  year: "1994",
+const props = defineProps({
+  formData: Object,
 });
+
+const emit = defineEmits(["saveNames"]);
+const formData = reactive({ ...props.formData });
 
 const router = useRouter();
 
-const handleSubmit = () => {
-  // Save and redirect logic
-  router.push("/aboutYourselfBasics");
+const handleSubmit = async () => {
+  emit("saveNames", formData);
+  console.log(formData);
 };
 
 const logout = async () => {
@@ -162,7 +162,12 @@ const logout = async () => {
                   This is the name on your passport or driving licence. For
                   example, Elizabeth Joy Smith.
                 </p>
-                <input type="text" v-model="form.legal_name" required />
+                <input
+                  placeholder="Enter your legal name"
+                  type="text"
+                  v-model="formData.legalName"
+                  required
+                />
               </div>
             </div>
             <!-- Preferred Name -->
@@ -173,7 +178,11 @@ const logout = async () => {
                   The name you’d like us to use when we send you a message or
                   talk to you on the phone. For example, Lizzie. (optional)
                 </p>
-                <input type="text" v-model="form.preferred_name" />
+                <input
+                  placeholder="What we should call you?"
+                  type="text"
+                  v-model="formData.nickName"
+                />
               </div>
             </div>
           </div>
@@ -187,21 +196,21 @@ const logout = async () => {
                 <div class="d-flex justify-content-between">
                   <input
                     type="text"
-                    v-model="form.day"
+                    v-model="formData.dob.day"
                     placeholder="Day"
                     class="dob-input"
                     required
                   />
                   <input
                     type="text"
-                    v-model="form.month"
+                    v-model="formData.dob.month"
                     placeholder="Month"
                     class="dob-input"
                     required
                   />
                   <input
                     type="text"
-                    v-model="form.year"
+                    v-model="formData.dob.year"
                     placeholder="Year"
                     class="dob-input"
                     required

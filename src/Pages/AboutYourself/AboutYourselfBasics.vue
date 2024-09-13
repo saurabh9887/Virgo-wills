@@ -1,14 +1,26 @@
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
-const address1 = ref("44 The Fairway");
-const address2 = ref("44 The Fairway");
-const city = ref("greece");
-const postcode = ref("12345");
-const phoneNumber = ref("1234567898");
-const addressSearchVisible = ref(false);
-const searchAddress = ref("");
+// const address1 = ref("44 The Fairway");
+// const address2 = ref("44 The Fairway");
+// const city = ref("greece");
+// const postcode = ref("12345");
+// const phoneNumber = ref("1234567898");
+// const addressSearchVisible = ref(false);
+// const searchAddress = ref("");
+
+const props = defineProps({
+  formData: Object,
+});
+
+const emit = defineEmits(["saveBasics"]);
+const formData = reactive({ ...props.formData });
+
+const handleSubmit = () => {
+  emit("saveBasics", formData);
+  console.log(formData);
+};
 
 const router = useRouter();
 
@@ -16,17 +28,17 @@ const toggleAddressSearch = () => {
   addressSearchVisible.value = !addressSearchVisible.value;
 };
 
-const submitForm = () => {
-  // Logic to handle form submission
-  console.log("Form submitted with data:", {
-    address1: address1.value,
-    address2: address2.value,
-    city: city.value,
-    postcode: postcode.value,
-    phoneNumber: phoneNumber.value,
-  });
-  router.push("/aboutYourselfPartner");
-};
+// const submitForm = () => {
+//   // Logic to handle form submission
+//   console.log("Form submitted with data:", {
+//     address1: address1.value,
+//     address2: address2.value,
+//     city: city.value,
+//     postcode: postcode.value,
+//     phoneNumber: phoneNumber.value,
+//   });
+//   router.push("/aboutYourselfPartner");
+// };
 
 const logout = async () => {
   try {
@@ -162,7 +174,7 @@ const goBack = () => {
     <div class="container">
       <div class="wrapper pt-45 md-pt-50 pb-30 md-pb-50">
         <h1 class="text-center mb-30">Your contact details</h1>
-        <form @submit.prevent="submitForm">
+        <form @submit.prevent="handleSubmit">
           <!-- Address Section -->
           <div class="row mb-3" id="addressSection">
             <div class="col-lg-12">
@@ -171,20 +183,20 @@ const goBack = () => {
                   <h4>Your address</h4>
                   <div class="mb-2">
                     <p>Address line 1</p>
-                    <input type="text" v-model="address1" required />
+                    <input type="text" v-model="formData.address1" required />
                   </div>
                   <div class="mb-2">
                     <p>Address line 2 (Optional)</p>
-                    <input type="text" v-model="address2" />
+                    <input type="text" v-model="formData.address2" />
                   </div>
                 </div>
                 <div class="col-lg-4 mt-40">
                   <p>City</p>
-                  <input type="text" v-model="city" />
+                  <input type="text" v-model="formData.city" />
                 </div>
                 <div class="col-lg-3 mt-40">
                   <p>Postcode</p>
-                  <input type="text" v-model="postcode" />
+                  <input type="Number" v-model="formData.postalCode" />
                 </div>
               </div>
             </div>

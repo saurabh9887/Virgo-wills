@@ -18,12 +18,16 @@ const form = reactive({
 const router = useRouter();
 const allChildrens = ref([]);
 
-const handleSubmit = async () => {
-  try {
-    console.log("handleSubmit");
-  } catch (error) {
-    console.log(error);
-  }
+const props = defineProps({
+  formData: Object,
+});
+
+const emit = defineEmits(["saveChildren"]);
+const formData = reactive({ ...props.formData });
+
+const handleSubmit = () => {
+  emit("saveChildren", formData);
+  console.log(formData);
 };
 
 const handleAddChild = async () => {
@@ -42,6 +46,9 @@ onMounted(async () => {
   try {
     const res = await axios.get("http://localhost:3000/api/children");
     allChildrens.value = res.data;
+    allChildrens.value.forEach((item) =>
+      formData.childrenSelected.push(item._id)
+    );
   } catch (error) {
     console.log(error);
   }
@@ -207,6 +214,7 @@ const goBack = () => {
               <ul class="w-100 style-none">
                 <li class="me-2 w-100 mb-3">
                   <input
+                    v-model="formData.haveChildrens"
                     type="radio"
                     class="btn-check"
                     name="options1"
@@ -220,6 +228,7 @@ const goBack = () => {
                 </li>
                 <li class="me-2 w-100 mb-3">
                   <input
+                    v-model="formData.haveChildrens"
                     type="radio"
                     class="btn-check"
                     name="options1"
@@ -296,11 +305,7 @@ const goBack = () => {
             >
               Back
             </button>
-            <button
-              type="submit"
-              class="btn btn-primary mb-3 btn-right py"
-              onclick="location.href='/aboutYourselfPets'"
-            >
+            <button type="submit" class="btn btn-primary mb-3 btn-right py">
               Save and continue
             </button>
           </div>

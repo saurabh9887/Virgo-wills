@@ -31,9 +31,25 @@ const logout = async () => {
   }
 };
 
+const props = defineProps({
+  formData: Object,
+});
+
+const emit = defineEmits(["savePet"]);
+const formData = reactive({ ...props.formData });
+console.log(formData);
+
 const handleSubmit = async () => {
+  // emit("savePet", formData);
+  // console.log(formData);
+
   try {
-    console.log("handleSubmit");
+    const res = await axios.post(
+      "http://localhost:3000/api/aboutyou/add",
+      formData
+    );
+    // router.push("/yourwill");
+    console.log(res.data);
   } catch (error) {
     console.log(error);
   }
@@ -43,6 +59,7 @@ onMounted(async () => {
   try {
     const res = await axios.get("http://localhost:3000/api/pet");
     allPets.value = res.data;
+    allPets.value.forEach((item) => formData.petSelected.push(item._id));
   } catch (error) {
     console.log(error);
   }
@@ -187,6 +204,7 @@ onMounted(async () => {
                   <ul class="w-100 style-none">
                     <li class="me-2 w-100 mb-3">
                       <input
+                        v-model="formData.havePets"
                         type="radio"
                         class="btn-check"
                         name="options1"
@@ -200,6 +218,7 @@ onMounted(async () => {
                     </li>
                     <li class="me-2 w-100 mb-3">
                       <input
+                        v-model="formData.havePets"
                         type="radio"
                         class="btn-check"
                         name="options1"
@@ -274,11 +293,7 @@ onMounted(async () => {
               >
                 Back
               </button>
-              <button
-                type="button"
-                class="btn btn-primary mb-3 btn-right py"
-                onclick="location.href='/yourwill'"
-              >
+              <button type="button" class="btn btn-primary mb-3 btn-right py">
                 Save and continue
               </button>
             </div>

@@ -43,10 +43,25 @@ const logout = async () => {
   }
 };
 
+const props = defineProps({
+  formData: Object,
+});
+
+const emit = defineEmits(["savePartner"]);
+const formData = reactive({ ...props.formData });
+
+const handleSubmit = () => {
+  emit("savePartner", formData);
+  console.log(formData);
+};
+
 onMounted(async () => {
   try {
     const res = await axios.get("http://localhost:3000/api/people");
     morePartners.value = res.data;
+    allChildrens.value.forEach((item) =>
+      formData.childrenSelected.push(item._id)
+    );
   } catch (error) {
     console.log(error);
   }
@@ -182,14 +197,19 @@ onMounted(async () => {
           Select your current legal status, even if you know it’s going to
           change soon. You can always update this in the future.
         </p>
-        <form action="#" method="POST">
+        <form @submit="handleSubmit">
           <!-- Marital Status Options Section -->
           <div class="row align-items-start mb-50">
             <div class="col-lg-12">
               <div class="marital-status-options">
                 <!-- Status Options -->
                 <label class="status-option"
-                  ><input type="radio" name="marital-status" value="single" />
+                  ><input
+                    type="radio"
+                    v-model="formData.maritalStatus"
+                    name="marital-status"
+                    value="single"
+                  />
                   Single</label
                 >
                 <label class="status-option"
@@ -197,6 +217,7 @@ onMounted(async () => {
                     type="radio"
                     name="marital-status"
                     value="living-with-partner"
+                    v-model="formData.maritalStatus"
                   />
                   Living with a partner but not married</label
                 >
@@ -206,6 +227,7 @@ onMounted(async () => {
                     name="marital-status"
                     value="married"
                     checked
+                    v-model="formData.maritalStatus"
                   />
                   Married</label
                 >
@@ -214,15 +236,26 @@ onMounted(async () => {
                     type="radio"
                     name="marital-status"
                     value="civil-partnership"
+                    v-model="formData.maritalStatus"
                   />
                   Civil Partnership</label
                 >
                 <label class="status-option"
-                  ><input type="radio" name="marital-status" value="engaged" />
+                  ><input
+                    type="radio"
+                    v-model="formData.maritalStatus"
+                    name="marital-status"
+                    value="engaged"
+                  />
                   Engaged</label
                 >
                 <label class="status-option"
-                  ><input type="radio" name="marital-status" value="widowed" />
+                  ><input
+                    type="radio"
+                    v-model="formData.maritalStatus"
+                    name="marital-status"
+                    value="widowed"
+                  />
                   Widowed</label
                 >
                 <label class="status-option"
@@ -230,6 +263,7 @@ onMounted(async () => {
                     type="radio"
                     name="marital-status"
                     value="widowed-remarried"
+                    v-model="formData.maritalStatus"
                   />
                   Widowed and remarried</label
                 >
@@ -238,6 +272,7 @@ onMounted(async () => {
                     type="radio"
                     name="marital-status"
                     value="separated"
+                    v-model="formData.maritalStatus"
                   />
                   Married but separated</label
                 >
@@ -246,11 +281,17 @@ onMounted(async () => {
                     type="radio"
                     name="marital-status"
                     value="civil-partnership-separated"
+                    v-model="formData.maritalStatus"
                   />
                   Civil partnership but separated</label
                 >
                 <label class="status-option"
-                  ><input type="radio" name="marital-status" value="divorced" />
+                  ><input
+                    type="radio"
+                    v-model="formData.maritalStatus"
+                    name="marital-status"
+                    value="divorced"
+                  />
                   Divorced</label
                 >
               </div>
@@ -260,8 +301,8 @@ onMounted(async () => {
           <!-- Partner Info Section -->
           <div class="partner-selection-wrapper">
             <label
-              v-for="(x, index) in morePartners"
-              :key="index"
+              v-for="x in morePartners"
+              :key="x._id"
               class="partner-option"
             >
               <div class="partner-details">
@@ -272,7 +313,13 @@ onMounted(async () => {
                   <p>{{ x.email }}</p>
                 </div>
                 <div class="checkamrk">
-                  <input type="checkbox" name="partner" value="nakul" checked />
+                  <input
+                    v-model="formData.selectedPartner"
+                    type="checkbox"
+                    name="partner"
+                    :value="x._id"
+                    @change="() => console.log(formData.selectedPartner)"
+                  />
                 </div>
               </div>
             </label>
@@ -318,11 +365,7 @@ onMounted(async () => {
             >
               Back
             </button>
-            <button
-              type="button"
-              class="btn btn-primary mb-3 btn-right py"
-              onclick="location.href='/aboutYourselfChildren'"
-            >
+            <button type="submit" class="btn btn-primary mb-3 btn-right py">
               Save and continue
             </button>
           </div>

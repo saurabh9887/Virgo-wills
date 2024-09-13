@@ -31,6 +31,7 @@ import Funeral3 from "../Pages/Funeral/Funeral3.vue";
 import Funeral4 from "../Pages/Funeral/Funeral4.vue";
 import Gifts from "../Pages/Gifts/gifts.vue";
 import Register from "../Pages/Register.vue";
+import AboutYou from "../Pages/AboutYou.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -44,6 +45,7 @@ const router = createRouter({
     { path: "/aboutYourselfPartner", component: AboutYourselfPartner },
     { path: "/aboutYourselfChildren", component: AboutYourselfChildren },
     { path: "/aboutYourselfPets", component: AboutYourselfPets },
+    { path: "/aboutYou", component: AboutYou },
     { path: "/guardians1", component: Guardians1 },
     { path: "/guardians2", component: Guardians2 },
     { path: "/guardians3", component: Guardians3 },

@@ -6,6 +6,7 @@ import authRoute from "./routes/auth.js";
 import peopleRoute from "./routes/peopleRoute.js";
 import childRoute from "./routes/childrensRoute.js";
 import petRoute from "./routes/petsRoute.js";
+import AYJsonRoute from "./routes/aboutYouJsonRoute.js";
 
 const app = express();
 app.use(cors());
@@ -16,6 +17,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/people", peopleRoute);
 app.use("/api/children", childRoute);
 app.use("/api/pet", petRoute);
+app.use("/api/aboutyou", AYJsonRoute);
 
 mongoose
   .connect(process.env.MONGO_URL)
