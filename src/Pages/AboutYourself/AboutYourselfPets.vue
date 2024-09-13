@@ -48,7 +48,7 @@ const handleSubmit = async () => {
       "http://localhost:3000/api/aboutyou/add",
       formData
     );
-    // router.push("/yourwill");
+    router.push("/yourwill");
     console.log(res.data);
   } catch (error) {
     console.log(error);
@@ -192,7 +192,7 @@ onMounted(async () => {
     <section class="marital-status-form">
       <div class="container">
         <div class="wrapper pt-45 md-pt-50 pb-20 md-pb-50">
-          <form @submit="handleSubmit">
+          <form @submit.prevent="handleSubmit">
             <!-- Marital Status Options Section -->
             <div class="row align-items-start mb-50">
               <div class="col-lg-6">
@@ -293,7 +293,7 @@ onMounted(async () => {
               >
                 Back
               </button>
-              <button type="button" class="btn btn-primary mb-3 btn-right py">
+              <button type="submit" class="btn btn-primary mb-3 btn-right py">
                 Save and continue
               </button>
             </div>
