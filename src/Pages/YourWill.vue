@@ -248,7 +248,7 @@
                 <div class="text-end edit-button">
                   <router-link
                     class="apply-btn text-center tran3s mb-30"
-                    to="/guardians1"
+                    to="/guardians"
                   >
                     EDIT
                   </router-link>

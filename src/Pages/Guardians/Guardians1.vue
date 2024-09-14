@@ -1,11 +1,60 @@
 <script setup>
+import axios from "axios";
+import { onMounted, reactive, ref } from "vue";
+
+const addGuardian = reactive({
+  name: "",
+  email: "",
+  address: "",
+  dob: {
+    day: null,
+    month: null,
+    year: "",
+  },
+  age: "",
+});
+
+const handleAddGuardian = async () => {
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/api/people/add",
+      addGuardian
+    );
+    partnersArray.value.push(res.data);
+    console.log(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const props = defineProps({
+  child: Object,
+});
+
+const emit = defineEmits(["save1"]);
+const child = reactive({ ...props.child });
+
+console.log(child);
+
 const handleSubmit = async () => {
   try {
+    emit("save1", child);
     console.log("handleSubmit");
   } catch (error) {
     console.log(error);
   }
 };
+
+const partnersArray = ref([]);
+
+onMounted(async () => {
+  try {
+    const partnersRes = await axios.get("http://localhost:3000/api/people");
+    partnersArray.value = partnersRes.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>
 
 <template>
@@ -130,7 +179,7 @@ const handleSubmit = async () => {
     <div class="container">
       <div class="wrapper pt-45 md-pt-50 pb-20 md-pb-50">
         <h1 class="text-center mb-30">
-          Who would you like Heet Nilesh Rathod’s guardian to be?
+          Who would you like {{ child.name }}’s guardian to be?
         </h1>
         <p class="text-center mb-30">
           Your children will be taken care of by your guardians if everyone with
@@ -140,56 +189,22 @@ const handleSubmit = async () => {
           more<br />It’s a good idea to choose either a couple or just one
           person as guardian for your children.
         </p>
-        <form @submit="handleSubmit">
+        <form @submit.prevent="handleSubmit">
           <!-- Partner Info Section -->
           <div class="row align-items-start mb-3">
             <div class="col-lg-12">
-              <div class="partner-selection">
+              <div
+                v-for="(x, index) in partnersArray"
+                :key="index"
+                class="partner-selection"
+              >
                 <label class="partner-option">
                   <div class="partner-details">
                     <div class="check-name">
-                      <p><strong>Nakul Bhoir</strong></p>
-                      <p>nilesh@virgofinancial.co.uk</p>
-                    </div>
-                    <div class="checkamrk">
-                      <input
-                        type="checkbox"
-                        name="partner"
-                        value="nakul"
-                        checked
-                      />
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-            <div class="col-lg-12">
-              <div class="partner-selection">
-                <label class="partner-option">
-                  <div class="partner-details">
-                    <div class="check-name">
-                      <p><strong>Nakul Bhoir</strong></p>
-                      <p>nilesh@virgofinancial.co.uk</p>
-                    </div>
-                    <div class="checkamrk">
-                      <input
-                        type="checkbox"
-                        name="partner"
-                        value="nakul"
-                        checked
-                      />
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-            <div class="col-lg-12">
-              <div class="partner-selection">
-                <label class="partner-option">
-                  <div class="partner-details">
-                    <div class="check-name">
-                      <p><strong>Nakul Bhoir</strong></p>
-                      <p>nilesh@virgofinancial.co.uk</p>
+                      <p>
+                        <strong>{{ x.name }}</strong>
+                      </p>
+                      <p>{{ x.email }}</p>
                     </div>
                     <div class="checkamrk">
                       <input
@@ -238,7 +253,10 @@ const handleSubmit = async () => {
                           </div>
 
                           <div class="form-wrapper m-auto">
-                            <form id="newPartnerForm" action="#">
+                            <form
+                              @submit.prevent="handleAddGuardian"
+                              id="newPartnerForm"
+                            >
                               <div class="row">
                                 <div class="col-12">
                                   <div
@@ -246,6 +264,7 @@ const handleSubmit = async () => {
                                   >
                                     <label><b>Full Name</b></label>
                                     <input
+                                      v-model="addGuardian.name"
                                       type="text"
                                       id="partnerName"
                                       placeholder="Enter Your Name"
@@ -258,6 +277,7 @@ const handleSubmit = async () => {
                                   >
                                     <label><b>Email Address</b></label>
                                     <input
+                                      v-model="addGuardian.email"
                                       type="email"
                                       id="partnerEmail"
                                       placeholder="Enter Your Email"
@@ -273,6 +293,7 @@ const handleSubmit = async () => {
                                       ><b>Postal Address</b>(Optional)</label
                                     >
                                     <textarea
+                                      v-model="addGuardian.address"
                                       id="partnerAddress"
                                       placeholder="Enter Your Address"
                                       style="
@@ -294,6 +315,7 @@ const handleSubmit = async () => {
                                     <label><b>Birth Date </b> (Optional)</label>
                                     <div class="d-flex justify-content-between">
                                       <input
+                                        v-model="addGuardian.dob.day"
                                         type="text"
                                         name="day"
                                         placeholder="Day"
@@ -302,6 +324,7 @@ const handleSubmit = async () => {
                                         required
                                       />
                                       <input
+                                        v-model="addGuardian.dob.month"
                                         type="text"
                                         name="month"
                                         placeholder="Month"
@@ -310,6 +333,7 @@ const handleSubmit = async () => {
                                         required
                                       />
                                       <input
+                                        v-model="addGuardian.dob.year"
                                         type="text"
                                         name="year"
                                         placeholder="Year"
@@ -328,6 +352,7 @@ const handleSubmit = async () => {
                                         class="form-check form-check-inline ps-4"
                                       >
                                         <input
+                                          v-model="addGuardian.age"
                                           class="form-check-input"
                                           type="radio"
                                           name="inlineRadioOptions"
@@ -343,6 +368,7 @@ const handleSubmit = async () => {
                                       </div>
                                       <div class="form-check form-check-inline">
                                         <input
+                                          v-model="addGuardian.age"
                                           class="form-check-input"
                                           type="radio"
                                           name="inlineRadioOptions"
@@ -378,6 +404,7 @@ const handleSubmit = async () => {
                                 </div>
                                 <div class="col-12">
                                   <button
+                                    type="submit"
                                     class="btn-eleven fw-500 tran3s d-block mt-20"
                                   >
                                     Save Person
@@ -476,9 +503,9 @@ const handleSubmit = async () => {
                 >
               </p>
 
-              <router-link to="/guardians2" class="btn btn-primary"
-                >Save and continue
-              </router-link>
+              <button type="type" class="btn btn-primary">
+                Save and continue
+              </button>
             </div>
 
             <div class="col-lg-3"></div>

@@ -1,11 +1,32 @@
 <script setup>
+import axios from "axios";
+import { onMounted, reactive, ref } from "vue";
+
+const props = defineProps({
+  child: Object,
+});
+
+const emit = defineEmits(["save2"]);
+const child = reactive({ ...props.child });
+
 const handleSubmit = async () => {
   try {
-    console.log("handleSubmit");
+    emit("save2", child);
   } catch (error) {
     console.log(error);
   }
 };
+
+const partnersArray = ref([]);
+
+onMounted(async () => {
+  try {
+    const partnersRes = await axios.get("http://localhost:3000/api/people");
+    partnersArray.value = partnersRes.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>
 
 <template>
@@ -131,11 +152,12 @@ const handleSubmit = async () => {
   >
     <div class="container">
       <div class="row">
-        <div class="col-lg-6">
+        <div v-for="(x, index) in partnersArray" :key="index" class="col-lg-6">
           <div class="ps-xxl-4 wow fadeInRight">
             <div class="title-one">
               <h3 class="text-center mb-30">
-                Does Nadeem already have parental responsibility for Heet?
+                Does {{ x.name }} already have parental responsibility for
+                {{ child.name }}?
               </h3>
             </div>
             <p class="mt-40 md-mt-20 mb-40 md-mb-20">
@@ -145,12 +167,6 @@ const handleSubmit = async () => {
               both have parental responsibility if they are civil partners at
               the time of fertility treatment or donor insemination.
             </p>
-            <!-- <ul class="list-style-one style-none">
-								<li>Seamless searching</li>
-								<li>Get top 3% experts for your project</li>
-								<li>Protected payments system</li>
-								
-							</ul> -->
             <div class="col-lg-7">
               <ul class="btn-group w-100 style-none d-flex">
                 <li class="me-2 w-100">
@@ -182,7 +198,7 @@ const handleSubmit = async () => {
             </div>
           </div>
         </div>
-        <div class="col-lg-6">
+        <!-- <div class="col-lg-6">
           <div
             class="ps-xxl-4 wow fadeInRight"
             style="visibility: visible; animation-name: fadeInRight"
@@ -230,7 +246,7 @@ const handleSubmit = async () => {
               </ul>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </section>
@@ -276,10 +292,16 @@ const handleSubmit = async () => {
           >
             Back
           </button>
-          <!-- <button type="button" class="btn btn-primary mb-3 btn-right py">Save and continue</button> -->
-          <a href="/guardians3" class="btn btn-primary mb-3 btn-right py"
+          <button
+            @click="handleSubmit"
+            type="submit"
+            class="btn btn-primary mb-3 btn-right py"
+          >
+            Save and continue
+          </button>
+          <!-- <a href="/guardians3" class="btn btn-primary mb-3 btn-right py"
             >Save and continue
-          </a>
+          </a> -->
         </div>
       </div>
     </div>

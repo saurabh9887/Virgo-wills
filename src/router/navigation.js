@@ -32,6 +32,7 @@ import Funeral4 from "../Pages/Funeral/Funeral4.vue";
 import Gifts from "../Pages/Gifts/gifts.vue";
 import Register from "../Pages/Register.vue";
 import AboutYou from "../Pages/AboutYou.vue";
+import Guardians from "../Pages/Guardians.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -51,6 +52,7 @@ const router = createRouter({
     { path: "/guardians3", component: Guardians3 },
     { path: "/guardians4", component: Guardians4 },
     { path: "/guardians5", component: Guardians5 },
+    { path: "/guardians", component: Guardians },
     { path: "/accountsAndProperty", component: AccountsAndProperty },
     { path: "/yourEstate1", component: YourEstate1 },
     { path: "/yourEstate2", component: YourEstate2 },

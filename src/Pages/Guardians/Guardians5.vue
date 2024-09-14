@@ -1,4 +1,7 @@
 <script setup>
+import axios from "axios";
+import { onMounted, ref } from "vue";
+
 const handleSubmit = async () => {
   try {
     console.log("handleSubmit");
@@ -6,6 +9,30 @@ const handleSubmit = async () => {
     console.log(error);
   }
 };
+
+const handleAddGuardian = async () => {
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/api/people/add",
+      addGuardian
+    );
+    partnersArray.value.push(res.data);
+    console.log(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const partnersArray = ref([]);
+
+onMounted(async () => {
+  try {
+    const partnersRes = await axios.get("http://localhost:3000/api/people");
+    partnersArray.value = partnersRes.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>
 
 <template>
@@ -163,53 +190,19 @@ const handleSubmit = async () => {
 
           <!-- Partner Info Section -->
           <div class="row align-items-start mb-3">
-            <div class="col-lg-12">
+            <div
+              v-for="(x, index) in partnersArray"
+              :key="index"
+              class="col-lg-12"
+            >
               <div class="partner-selection">
                 <label class="partner-option">
                   <div class="partner-details">
                     <div class="check-name">
-                      <p><strong>Nakul Bhoir</strong></p>
-                      <p>nilesh@virgofinancial.co.uk</p>
-                    </div>
-                    <div class="checkamrk">
-                      <input
-                        type="checkbox"
-                        name="partner"
-                        value="nakul"
-                        checked
-                      />
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-            <div class="col-lg-12">
-              <div class="partner-selection">
-                <label class="partner-option">
-                  <div class="partner-details">
-                    <div class="check-name">
-                      <p><strong>Nakul Bhoir</strong></p>
-                      <p>nilesh@virgofinancial.co.uk</p>
-                    </div>
-                    <div class="checkamrk">
-                      <input
-                        type="checkbox"
-                        name="partner"
-                        value="nakul"
-                        checked
-                      />
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-            <div class="col-lg-12">
-              <div class="partner-selection">
-                <label class="partner-option">
-                  <div class="partner-details">
-                    <div class="check-name">
-                      <p><strong>Nakul Bhoir</strong></p>
-                      <p>nilesh@virgofinancial.co.uk</p>
+                      <p>
+                        <strong>{{ x.name }}</strong>
+                      </p>
+                      <p>{{ x.email }}</p>
                     </div>
                     <div class="checkamrk">
                       <input
@@ -259,7 +252,11 @@ const handleSubmit = async () => {
                           </div>
 
                           <div class="form-wrapper m-auto">
-                            <form id="newPartnerForm" action="#">
+                            <form
+                              @submit.prevent="handleAddGuardian"
+                              id="newPartnerForm"
+                              action="#"
+                            >
                               <div class="row">
                                 <div class="col-12">
                                   <div
@@ -399,6 +396,7 @@ const handleSubmit = async () => {
                                 </div>
                                 <div class="col-12">
                                   <button
+                                    type="submit"
                                     class="btn-eleven fw-500 tran3s d-block mt-20"
                                   >
                                     Save Person
